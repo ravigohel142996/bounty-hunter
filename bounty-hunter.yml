@@ -1,0 +1,28 @@
+name: 🤖 Daily Bounty Hunter
+
+on:
+  schedule:
+    - cron: "30 6 * * *"   # runs every day 06:30 UTC (= 12:00 IST noon, India)
+  workflow_dispatch: {}      # also allows manual "Run workflow" button
+
+permissions:
+  contents: write            # allows committing the updated BOUNTIES.md
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bounty hunter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 bounty_hunter.py
+
+      - name: Commit updated report
+        run: |
+          git config user.name  "bounty-hunter-bot"
+          git config user.email "actions@github.com"
+          git add BOUNTIES.md
+          git diff --cached --quiet || git commit -m "🤖 daily bounty report [skip ci]"
+          git push
