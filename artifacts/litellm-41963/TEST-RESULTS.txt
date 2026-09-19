@@ -34,3 +34,19 @@ Fix: added inline '# test-quality-ok: ...' justifications matching the module's
 existing convention (test_responses_api_request_body.py / test_handler.py style).
 No behavior change. Verified against exact merge-base (209a7809):
   test_quality_gate: OK | ruff_strict_gate: OK | type_discipline_gate: OK | ruff checks: OK
+
+=== FOLLOW-UP (v4, forced push) — AGENTS.md policy compliance (bot review) ===
+Findings (greptile, quoting AGENTS.md; CodeQL; Copilot) -> resolution:
+  1. new test module violates "bug fixes extend the existing mapped test file"
+     -> regression block moved into tests/test_litellm/responses/test_dispatch.py
+        (5 focused tests), new module deleted
+  2. parameter rebinding without reason (LIT011) -> single `# rebind-ok:` suppression
+  3. 5-line prose banner comment -> removed (anti-AI-slop-comment rule)
+  4. identity (`is`) assertion -> equality-only (behavioral) post-fix
+  5. untyped capture helpers -> `Final[dict[str, Any]]` + `-> None`
+  6. Copilot "test_openai_responses_api.py broken" -> checked: lives in
+     tests/llm_responses_api_testing/ (live-API integration dir, not in the unit
+     CI shards); our wire-shape updates cover every unit-shard assertion
+Verified vs merge-base 209a7809: format (ruff.toml) OK; lint both lanes OK;
+gate trio (TQ/strict/LIT) OK; test_dispatch.py 14/14 mine-green (1 pre-existing
+tenacity-env miss); 136 passed across the 5 wire-shape files. Diff: +87/-8, 7 files.
