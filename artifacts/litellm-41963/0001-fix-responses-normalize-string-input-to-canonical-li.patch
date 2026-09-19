@@ -1,4 +1,4 @@
-From 6703f1a906b01e5f67847d16605fd2bed13bff22 Mon Sep 17 00:00:00 2001
+From 1ff93435f4ec9e44583310eb593621d4196e292c Mon Sep 17 00:00:00 2001
 From: ravigohel142996 <ravigohel142996@users.noreply.github.com>
 Date: Sat, 19 Sep 2026 16:51:18 +0000
 Subject: [PATCH] fix(responses): normalize string input to canonical list
@@ -19,8 +19,13 @@ Closes #41963
 Co-authored-by: arena-agent <agent@arena.ai>
 ---
  litellm/responses/main.py                     | 25 +++++++
+ .../test_azure_ai_responses_transformation.py |  3 +-
+ ...t_fireworks_ai_responses_transformation.py |  5 +-
+ .../test_responses_api_request_body.py        | 10 ++-
+ ...sponses_supported_endpoints_passthrough.py |  3 +-
  .../test_string_input_normalization.py        | 72 +++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ .../responses/test_text_format_conversion.py  |  5 +-
+ 7 files changed, 116 insertions(+), 7 deletions(-)
  create mode 100644 tests/test_litellm/responses/test_string_input_normalization.py
 
 diff --git a/litellm/responses/main.py b/litellm/responses/main.py
@@ -66,6 +71,99 @@ index 5a4a08b..b97bcf0 100644
          #########################################################
          # Native MCP Responses API
          #########################################################
+diff --git a/tests/test_litellm/llms/azure_ai/responses/test_azure_ai_responses_transformation.py b/tests/test_litellm/llms/azure_ai/responses/test_azure_ai_responses_transformation.py
+index bae956e..0fd4710 100644
+--- a/tests/test_litellm/llms/azure_ai/responses/test_azure_ai_responses_transformation.py
++++ b/tests/test_litellm/llms/azure_ai/responses/test_azure_ai_responses_transformation.py
+@@ -227,7 +227,8 @@ def _assert_native_responses_request(route, expected_url, expected_model):
+     assert f"{request.url.scheme}://{request.url.host}{request.url.path}" == expected_url
+     assert request.headers["api-key"] == "fake-key"
+     assert body["model"] == expected_model
+-    assert body["input"] == "What is the weather in SF?"
++    # string input is normalized to the canonical list before provider dispatch
++    assert body["input"] == [{"role": "user", "content": "What is the weather in SF?"}]
+     assert "messages" not in body
+     assert body["reasoning"] == {"effort": "high"}
+     assert body["tools"] == [WEATHER_TOOL]
+diff --git a/tests/test_litellm/llms/fireworks_ai/responses/test_fireworks_ai_responses_transformation.py b/tests/test_litellm/llms/fireworks_ai/responses/test_fireworks_ai_responses_transformation.py
+index d0697ca..79ffed3 100644
+--- a/tests/test_litellm/llms/fireworks_ai/responses/test_fireworks_ai_responses_transformation.py
++++ b/tests/test_litellm/llms/fireworks_ai/responses/test_fireworks_ai_responses_transformation.py
+@@ -321,7 +321,7 @@ def test_responses_call_keeps_a_developer_item_with_non_text_parts_in_place_as_a
+     )
+ 
+ 
+-def test_responses_call_forwards_string_input_and_instructions_unchanged() -> None:
++def test_responses_call_normalizes_string_input_and_forwards_instructions_unchanged() -> None:
+     client: Final = _mock_http_client(_fireworks_response("accounts/fireworks/models/kimi-k3"))
+     with patch(HTTPX_CLIENT_FACTORY, return_value=client):
+         litellm.responses(
+@@ -332,7 +332,8 @@ def test_responses_call_forwards_string_input_and_instructions_unchanged() -> No
+         )
+     _, _, body = _sent_request(client)
+     assert body["instructions"] == "Answer with exactly one word."
+-    assert body["input"] == "What is the capital of France?"
++    # string input is normalized to the canonical list before provider dispatch
++    assert body["input"] == [{"role": "user", "content": "What is the capital of France?"}]
+ 
+ 
+ def test_transform_request_forwards_non_string_instructions_and_input_untouched() -> None:
+diff --git a/tests/test_litellm/responses/test_responses_api_request_body.py b/tests/test_litellm/responses/test_responses_api_request_body.py
+index 6b5aab9..c139522 100644
+--- a/tests/test_litellm/responses/test_responses_api_request_body.py
++++ b/tests/test_litellm/responses/test_responses_api_request_body.py
+@@ -94,6 +94,9 @@ async def test_aresponses_context_management_and_shell_request_body_matches_expe
+     assert the httpx POST request body matches the expected JSON.
+     """
+     expected_body = _load_expected_body("context_management_and_shell.json")
++    call_input = expected_body["input"]
++    # string input is normalized to the canonical list before dispatch
++    expected_body["input"] = [{"role": "user", "content": call_input}]
+ 
+     with patch(
+         "litellm.llms.custom_httpx.http_handler.AsyncHTTPHandler.post",
+@@ -103,7 +106,7 @@ async def test_aresponses_context_management_and_shell_request_body_matches_expe
+ 
+         await litellm.aresponses(
+             model="openai/gpt-4o",
+-            input=expected_body["input"],
++            input=call_input,
+             context_management=expected_body["context_management"],
+             tools=expected_body["tools"],
+             tool_choice=expected_body["tool_choice"],
+@@ -121,6 +124,9 @@ async def test_aresponses_azure_shell_tool_request_body_matches_expected():
+     assert the httpx POST request body carries the shell tool verbatim.
+     """
+     expected_body = _load_expected_body("azure_shell_tool.json")
++    call_input = expected_body["input"]
++    # string input is normalized to the canonical list before dispatch
++    expected_body["input"] = [{"role": "user", "content": call_input}]
+ 
+     with patch(
+         "litellm.llms.custom_httpx.http_handler.AsyncHTTPHandler.post",
+@@ -135,7 +141,7 @@ async def test_aresponses_azure_shell_tool_request_body_matches_expected():
+             api_base="https://fake-resource.openai.azure.com",
+             api_key="fake-api-key",
+             api_version="2025-03-01-preview",
+-            input=expected_body["input"],
++            input=call_input,
+             tools=expected_body["tools"],
+             tool_choice=expected_body["tool_choice"],
+             max_output_tokens=expected_body["max_output_tokens"],
+diff --git a/tests/test_litellm/responses/test_responses_supported_endpoints_passthrough.py b/tests/test_litellm/responses/test_responses_supported_endpoints_passthrough.py
+index 4ff4963..e27e454 100644
+--- a/tests/test_litellm/responses/test_responses_supported_endpoints_passthrough.py
++++ b/tests/test_litellm/responses/test_responses_supported_endpoints_passthrough.py
+@@ -141,7 +141,8 @@ async def test_opt_in_forwards_responses_natively():
+     assert chat_route.call_count == 0
+     request = responses_route.calls.last.request
+     assert request.headers["authorization"] == "Bearer sk-backend"
+-    assert json.loads(request.content)["input"] == "hi"
++    # string input is normalized to the canonical list before native forwarding
++    assert json.loads(request.content)["input"] == [{"role": "user", "content": "hi"}]
+     assert isinstance(result, ResponsesAPIResponse)
+     assert result.output[0].content[0].text == "native"
+ 
 diff --git a/tests/test_litellm/responses/test_string_input_normalization.py b/tests/test_litellm/responses/test_string_input_normalization.py
 new file mode 100644
 index 0000000..641c9f0
@@ -144,6 +242,22 @@ index 0000000..641c9f0
 +
 +        assert isinstance(captured["input"], list)
 +        assert captured["input"] == original
+diff --git a/tests/test_litellm/responses/test_text_format_conversion.py b/tests/test_litellm/responses/test_text_format_conversion.py
+index c68ad16..9d3e760 100644
+--- a/tests/test_litellm/responses/test_text_format_conversion.py
++++ b/tests/test_litellm/responses/test_text_format_conversion.py
+@@ -200,7 +200,10 @@ class TestTextFormatConversion:
+             ), "schema should have confidence property"
+ 
+             # Validate other request parameters
+-            assert captured_request["input"] == "What is the capital of France?"
++            # string input is normalized to the canonical list before dispatch
++            assert captured_request["input"] == [
++                {"role": "user", "content": "What is the capital of France?"}
++            ]
+ 
+             # Validate the response
+             print("Response:", json.dumps(response, indent=4, default=str))
 -- 
 2.39.5
 

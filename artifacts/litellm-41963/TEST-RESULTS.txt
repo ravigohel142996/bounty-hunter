@@ -4,3 +4,23 @@ ruff format (pinned 0.15.3): both files already formatted
 ruff check ruff.toml (main.py) + ruff-tests.toml (tests): All checks passed
 collateral baseline: test_dispatch.py 1 failed/9 passed and test_responses_api_bridge_flag.py 1 error both IDENTICAL on unpatched main = pre-existing env noise, not regressions
 upstream base: BerriAI/litellm@5d28684 (2026-09-19)
+
+=== FOLLOW-UP (v2, forced push) — CI shard failures addressed ===
+Context: PR v1 failed 2 CI suites (responses-caching-types; All Other Providers).
+Root cause: 6 pre-existing tests asserted the OLD wire shape for string input
+(raw string forwarded verbatim to the provider). The fix changes the wire shape
+to the canonical list (the issue's requirement), so those expectations must move too.
+
+Tests updated (public API calls still pass plain strings; expectations now list):
+  tests/test_litellm/responses/test_responses_api_request_body.py      (2 tests)
+  tests/test_litellm/responses/test_text_format_conversion.py          (1)
+  tests/test_litellm/responses/test_responses_supported_endpoints_passthrough.py (1)
+  tests/test_litellm/llms/azure_ai/responses/test_azure_ai_responses_transformation.py (shared helper; 2 test fns, 15 params)
+  tests/test_litellm/llms/fireworks_ai/responses/test_fireworks_ai_responses_transformation.py (1)
+
+True-baseline delta protocol (unpatched upstream vs patched, both states):
+  shard A (responses+caching+types): 0 new failures
+  shard B (all 13 tests/test_litellm/llms/*/responses dirs): 0 new failures
+  Direct suite: 142 passed (6 previously-failing files + new test file)
+  ruff format --check + ruff check: main lane OK, tests lane OK
+    (pre-existing >120-col lines in untouched regions left as-is)
