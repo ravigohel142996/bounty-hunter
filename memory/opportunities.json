@@ -193,7 +193,7 @@
       "reward": 0,
       "currency": "USD",
       "funding": "none (contribution/portfolio)",
-      "status": "WATCHLIST_BACKUP",
+      "status": "VERSION_STALE_NO_CODE_FIX",
       "claimed": false,
       "assigned": false,
       "branch": null,
@@ -203,7 +203,7 @@
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Wrong cost calculation Nebius provider; proxy-label money-path bug; 0 competing PRs; needs authoritative Nebius pricing evidence. Score 67 backup slot."
+      "lessons_learned": "2026-09-19 analysis: price entry nebius/moonshotai/Kimi-K3=3e-6/1.5e-5 is CORRECT on current main ($2620.50 for the reporter tokens = vendor bill). At v1.100.0 the key did not exist -> stale-version under-count, not a current-main bug. Current get_model_info raises on unmapped models (no silent fallback). Value path = evidence-based triage comment (needs user approval for public post), not a code PR."
     }
   ],
   "watchlist_startups": [
