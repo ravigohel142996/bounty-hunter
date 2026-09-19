@@ -53,17 +53,17 @@
       "reward": 0,
       "currency": "USD",
       "funding": "unpaid (portfolio/relationship lane)",
-      "status": "STAGE3_DONE_LOCAL_PR_READY",
+      "status": "SUBMITTED_AWAITING_REVIEW",
       "claimed": false,
       "assigned": false,
       "branch": "fix/responses-string-input-normalization",
-      "pr_url": null,
-      "pr_status": "not submitted (artifacts ready, awaiting user's script run)",
+      "pr_url": "https://github.com/BerriAI/litellm/pull/41984",
+      "pr_status": "open, CI running (several suites green at T+3min), mergeable=true",
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Central normalization of string input for /v1/responses in litellm/responses/main.py; keep diff surgical, central layer gets extra review. | Implemented central-normalization fix (+25 lines in responses/main.py: _normalize_responses_api_string_input before dispatch). 6/6 tests, behavior toggle-proof (unpatched handler saw raw string; patched saw canonical list), ruff lanes clean, collateral baseline verified pre-existing. Artifacts: artifacts/litellm-41963/."
+      "lessons_learned": "Central normalization of string input for /v1/responses in litellm/responses/main.py; keep diff surgical, central layer gets extra review. | Implemented central-normalization fix (+25 lines in responses/main.py: _normalize_responses_api_string_input before dispatch). 6/6 tests, behavior toggle-proof (unpatched handler saw raw string; patched saw canonical list), ruff lanes clean, collateral baseline verified pre-existing. Artifacts: artifacts/litellm-41963/. | Submitted 2026-09-19 17:03 UTC via user's own gh auth (submit script). Fork delete failed 403 (no delete_repo scope) but harmless - PR targets upstream main. PENDING USER ACTION: sign BerriAI CLA (CLAassistant commented 17:04)."
     },
     {
       "url": "https://github.com/arakoodev/EdgeChains/issues/290",
