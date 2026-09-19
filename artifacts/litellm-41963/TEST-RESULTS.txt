@@ -1,0 +1,6 @@
+6 passed in 0.23s
+toggle-proof: UNPATCHED handler received raw string 'Reply with exactly ROUTE_OK.' | PATCHED handler received [{'role':'user','content':...}]
+ruff format (pinned 0.15.3): both files already formatted
+ruff check ruff.toml (main.py) + ruff-tests.toml (tests): All checks passed
+collateral baseline: test_dispatch.py 1 failed/9 passed and test_responses_api_bridge_flag.py 1 error both IDENTICAL on unpatched main = pre-existing env noise, not regressions
+upstream base: BerriAI/litellm@5d28684 (2026-09-19)

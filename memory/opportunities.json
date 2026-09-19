@@ -33,7 +33,7 @@
       "reward": 0,
       "currency": "USD",
       "funding": "unpaid (portfolio/relationship lane)",
-      "status": "STAGE3_DONE_LOCAL_PR_READY",
+      "status": "LOST_COMPETITION_WITHDRAWN",
       "claimed": false,
       "assigned": false,
       "branch": "fix/ollama-completion-thinking-field",
@@ -42,8 +42,8 @@
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
-      "rejection_reason": null,
-      "lessons_learned": "Guided fix: port thinking->reasoning_content remap from ollama/chat/transformation.py:344 to ollama/completion/transformation.py non-streaming else-branch (~L320). 0 comments, 0 linked PRs at discovery. Window ~48h before bots. | Stage3 2026-09-19: implemented minimal fix (+9/-1 src) + 2 mocked regression tests; 16/16 ollama completion tests, 27/27 chat tests, ruff lanes clean, toggle-proof done. Fork blocker discovered: fork default branch is litellm_internal_staging, no main, stale since 2026-07-03; CLA signature required at PR time. Artifacts in artifacts/litellm-41962/."
+      "rejection_reason": "Raced by 2 PRs within ~3h of issue filing: #41967 (Oscar-Williams, +6/-1 minimal fix + tests, 14:20 UTC) and #41970 (Pawan-Shahane, 14:47 'Working on this' comment, larger rewrite). User instructed to abort rather than submit 3rd duplicate (reputation protection).",
+      "lessons_learned": "RACE RULE for litellm-type repos: analyze-to-PR must be same-day, ideally <6h. Our fix was independently validated (competitor shipped near-identical minimal patch). Value preserved via honest withdrawal + pivot to #41963."
     },
     {
       "url": "https://github.com/BerriAI/litellm/issues/41963",
@@ -53,17 +53,17 @@
       "reward": 0,
       "currency": "USD",
       "funding": "unpaid (portfolio/relationship lane)",
-      "status": "RECOMMENDED_AWAITING_AUTHORIZATION",
+      "status": "STAGE3_DONE_LOCAL_PR_READY",
       "claimed": false,
       "assigned": false,
-      "branch": null,
+      "branch": "fix/responses-string-input-normalization",
       "pr_url": null,
-      "pr_status": null,
+      "pr_status": "not submitted (artifacts ready, awaiting user's script run)",
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Central normalization of string input for /v1/responses in litellm/responses/main.py; keep diff surgical, central layer gets extra review."
+      "lessons_learned": "Central normalization of string input for /v1/responses in litellm/responses/main.py; keep diff surgical, central layer gets extra review. | Implemented central-normalization fix (+25 lines in responses/main.py: _normalize_responses_api_string_input before dispatch). 6/6 tests, behavior toggle-proof (unpatched handler saw raw string; patched saw canonical list), ruff lanes clean, collateral baseline verified pre-existing. Artifacts: artifacts/litellm-41963/."
     },
     {
       "url": "https://github.com/arakoodev/EdgeChains/issues/290",
