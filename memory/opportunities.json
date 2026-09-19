@@ -173,17 +173,17 @@
       "reward": 0,
       "currency": "USD",
       "funding": "none (contribution/portfolio)",
-      "status": "WATCHLIST_APPROVED_FOR_PREP_PENDING",
+      "status": "PREP_READY_V1",
       "claimed": false,
       "assigned": false,
-      "branch": null,
+      "branch": "fix/gemini-schema-const",
       "pr_url": null,
       "pr_status": null,
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Fresh same-day (2026-09-19), labels bug+llm translation, 0 competing PRs, 6 dropped request fields enumerated by reporter. Same subsystem family as #41963/#41984. Score 74. Same-day analysis->PR window rule applies."
+      "lessons_learned": "Fresh same-day (2026-09-19), labels bug+llm translation, 0 competing PRs, 6 dropped request fields enumerated by reporter. Same subsystem family as #41963/#41984. Score 74. Same-day analysis->PR window rule applies. | 2026-09-20: competitor claim (nikhilmaguluri) went stale ~22h, 0 PRs; SCOPE CUT to item#1 only: Gemini `const` silently dropped by _build_vertex_schema whitelist -> translate string const to single-entry enum+type:string (Gemini string-enums only), non-string const dropped WITH verbose warning per issue expectation. Commit bcf363706 (+63/-0, 2 files). Gates all green vs merge-base 209a7809: 93/93 mapped file, 0 new failures whole vertex_ai dir (comm-proven), ruff+format+budget trio OK. Kit at artifacts/litellm-41913/. Awaiting explicit user approval for SUBMIT stage."
     },
     {
       "url": "https://github.com/BerriAI/litellm/issues/41782",

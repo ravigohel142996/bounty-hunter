@@ -1,0 +1,33 @@
+# litellm #41913 (slice: Gemini tool schema `const`) — submission kit 2026-09-20
+
+## Verified behavior (before fix)
+```
+from litellm.llms.vertex_ai.common_utils import _build_vertex_schema
+_build_vertex_schema({"type":"object","properties":{"amount":{"type":"number"},"currency":{"const":"USD"}},"required":["currency","amount"]})
+# -> {'type':'object','properties':{'amount':{'type':'number'},'currency':{'type':'object'}},'required':[...]}
+#    const LOST (matches the issue reporter's wire capture, POST Request Sent from LiteLLM)
+_build_vertex_schema({"type":"object","properties":{"value":{"type":"string","const":"fixed"}}})
+# -> {'type':'object','properties':{'value':{'type':'string'}}}   (const silently swallowed)
+```
+
+## After fix
+```
+# CASE1 -> {'type':'object','properties':{'amount':{'type':'number'},'currency':{'type':'string','enum':['USD']}}, ...}
+# CASE2 -> {'type':'object','properties':{'value':{'type':'string','enum':['fixed']}}}
+# CASE3 enum present -> unchanged enum ['a','b'] (not overwritten)
+# CASE4 non-string const=5 -> {'type':'object'} + verbose_logger.warning("...Gemini...no way to express...const=5...")
+```
+
+## Gates (mirrors full lint job, against merge-base 209a780992eda8a36802a717e0805a4d1433ceb2)
+- mapped test file: 93 passed (89 existing + 4 new)
+- whole tests/test_litellm/llms/vertex_ai dir: 0 new failures vs base (43-47 pre-existing env-noise both sides, comm-proven)
+- ruff format --check (ruff.toml) OK; ruff check main + tests lanes OK
+- test_quality_gate / ruff_strict_gate / type_discipline_gate: all OK
+- diff: 2 files, +63/-0
+
+## Live state at packaging
+- #41913 competing PR links: 0; comments: 1 (declared claim ~22h stale, no PR opened by declarer)
+- scope = item #1 only (6-item issue); items #2-#6 intentionally left for others
+EOF
+
+## ————————————————— PR-BODY.md below —————————————————
