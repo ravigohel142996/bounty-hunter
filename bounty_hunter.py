@@ -36,6 +36,20 @@ MAX_REPO_AGE_DAYS = 730           # scam farms are brand new
 KNOWN_SCAM_REPOS = {
     "scottcjn/rustchain-bounties", "zhangjiayang6835-cyber/bounty-plaza",
     "ikalus1988/misakanet", "aadarwal/swarmstatus-bounties",
+    # --- confirmed during 2026-09-19 deep scan (agent-verified farms) ---
+    "omniblocks/bountyfarmer", "omniblocks/monorepo",       # meme/$∞ bounties
+    "relayhop/sn-monetization-runtime",                      # spam "radar" bot
+    "securebananalabs/bug-bounty",                           # 1400-comment farm
+    "xevrion-v2/agent-playground",                           # typo-fix bait w/ 121 comments
+    "simondalmasso/atm-agent-teller-machine",                # "ORDER-xxx" money-radar spam
+    "liubaining-louis/louis-os",                             # monetization swarm spam
+    "yo4e/open-work-radar", "nexaitechau/algora-demo-1",
+    "tine1117/oss-hunter-livefire",                          # fake livefire bounties
+    "socksninja/sable-agent-reliability",                    # "verification record" spam
+    "unsafelabs/bounty-hunters",                             # crypto tasks, not OSS
+    "jain-igtm/cashgpt", "vansh-09/bountyscout",
+    "freedom-winds/bountyscout", "abdulsalam-create/bounty-watch",
+    "2510034127qq-wq/bountyscout", "attogram/fantastic-octo-giggle",
 }
 
 # Projects that historically pay (whitelist boost)
