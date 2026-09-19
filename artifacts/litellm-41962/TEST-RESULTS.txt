@@ -1,0 +1,7 @@
+16 passed, 2 warnings in 0.43s
+ruff format (pinned 0.15.3, line-length 120): 1 file already formatted [source file]
+ruff check ruff.toml: All checks passed! [source file]
+ruff check ruff-tests.toml: All checks passed! [test file]
+collateral: test_ollama_chat_transformation.py 27/27 passed
+toggle-proof: both new tests FAIL on unpatched code (reasoning_content=None = issue symptom), PASS with fix applied
+upstream base: BerriAI/litellm@12593788a28f (2026-09-19 13:08 UTC)

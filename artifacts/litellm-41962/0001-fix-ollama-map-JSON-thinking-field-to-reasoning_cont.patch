@@ -1,0 +1,145 @@
+From 765ce3a2399fe17a530b245a0f58d365f0c0180b Mon Sep 17 00:00:00 2001
+From: ravigohel142996 <ravigohel142996@users.noreply.github.com>
+Date: Sat, 19 Sep 2026 13:24:37 +0000
+Subject: [PATCH] fix(ollama): map JSON thinking field to reasoning_content in
+ non-streaming completion
+
+Ollama returns reasoning in a structured JSON "thinking" field on
+non-streaming completion responses (e.g. gpt-oss / qwen3 with think=true).
+The ollama/ completion transport only parsed inline <think> tags, so the
+reasoning was dropped and content came back empty while tokens were billed.
+
+Mirror the ollama chat transport (chat/transformation.py) and map the
+structured field to message.reasoning_content. Inline <think> parsing
+remains the fallback when the field is absent.
+
+Closes #41962
+
+Co-authored-by: arena-agent <agent@arena.ai>
+---
+ .../llms/ollama/completion/transformation.py  |  9 +-
+ .../test_ollama_completion_transformation.py  | 88 +++++++++++++++++++
+ 2 files changed, 96 insertions(+), 1 deletion(-)
+
+diff --git a/litellm/llms/ollama/completion/transformation.py b/litellm/llms/ollama/completion/transformation.py
+index a1340ba..97b1a35 100644
+--- a/litellm/llms/ollama/completion/transformation.py
++++ b/litellm/llms/ollama/completion/transformation.py
+@@ -320,7 +320,14 @@ class OllamaConfig(BaseConfig):
+             response_text = response_json.get("response", "")
+             content = None
+             reasoning_content = None
+-            if response_text is not None and isinstance(response_text, str):
++            thinking_content = response_json.get("thinking")
++            if thinking_content:
++                # Ollama returns reasoning in the structured "thinking" field on
++                # non-streaming responses (e.g. gpt-oss / qwen3 with think=true);
++                # map it to reasoning_content, same as the ollama chat transport.
++                reasoning_content = thinking_content
++                content = response_text
++            elif response_text is not None and isinstance(response_text, str):
+                 reasoning_content, content = _parse_content_for_reasoning(response_text)
+             else:
+                 content = response_text
+diff --git a/tests/test_litellm/llms/ollama/test_ollama_completion_transformation.py b/tests/test_litellm/llms/ollama/test_ollama_completion_transformation.py
+index b207115..2df5d52 100644
+--- a/tests/test_litellm/llms/ollama/test_ollama_completion_transformation.py
++++ b/tests/test_litellm/llms/ollama/test_ollama_completion_transformation.py
+@@ -411,6 +411,94 @@ class TestOllamaConfig:
+         )
+         assert result.choices[0]["finish_reason"] == "stop"
+ 
++    def test_transform_response_with_json_thinking_field(self):
++        """Regression test for https://github.com/BerriAI/litellm/issues/41962.
++
++        Ollama's non-streaming completion response can carry the model's
++        reasoning in a structured JSON "thinking" field. It must be mapped to
++        message.reasoning_content.
++        """
++        # Initialize config
++        config = OllamaConfig()
++
++        # Create mock response with a structured thinking field
++        raw_response = MagicMock()
++        raw_response.json.return_value = {
++            "response": "Here is my answer",
++            "thinking": "Let me reason about this first",
++            "prompt_eval_count": 12,
++            "eval_count": 6,
++        }
++
++        # Create properly structured model response object
++        model_response = ModelResponse(
++            id="test_id",
++            choices=[{"message": Message(content="")}],
++        )
++
++        # Create mock encoding
++        mock_encoding = MagicMock()
++        mock_encoding.encode.return_value = [1, 2, 3]
++
++        # Transform response
++        result = config.transform_response(
++            model="gpt-oss:20b",
++            raw_response=raw_response,
++            model_response=model_response,
++            logging_obj=MagicMock(),
++            request_data={},
++            messages=[],
++            optional_params={},
++            litellm_params={},
++            encoding=mock_encoding,
++        )
++
++        # Verify the structured thinking field is mapped to reasoning_content
++        assert result.choices[0]["message"].reasoning_content == "Let me reason about this first"
++        assert result.choices[0]["message"].content == "Here is my answer"
++        assert result.choices[0]["finish_reason"] == "stop"
++
++    def test_transform_response_with_json_thinking_field_only(self):
++        """When the model puts its whole turn into "thinking", content should be
++        empty (not None-converted) and reasoning_content must not be lost."""
++        # Initialize config
++        config = OllamaConfig()
++
++        # Create mock response where the entire reply is in the thinking field
++        raw_response = MagicMock()
++        raw_response.json.return_value = {
++            "response": "",
++            "thinking": "Internal chain-of-thought only",
++        }
++
++        # Create properly structured model response object
++        model_response = ModelResponse(
++            id="test_id",
++            choices=[{"message": Message(content="")}],
++        )
++
++        # Create mock encoding
++        mock_encoding = MagicMock()
++        mock_encoding.encode.return_value = [1, 2, 3]
++
++        # Transform response
++        result = config.transform_response(
++            model="qwen3:4b",
++            raw_response=raw_response,
++            model_response=model_response,
++            logging_obj=MagicMock(),
++            request_data={},
++            messages=[],
++            optional_params={},
++            litellm_params={},
++            encoding=mock_encoding,
++        )
++
++        # Verify reasoning is preserved and content stays empty
++        assert result.choices[0]["message"].reasoning_content == "Internal chain-of-thought only"
++        assert result.choices[0]["message"].content == ""
++        assert result.choices[0]["finish_reason"] == "stop"
++
+ 
+ class TestOllamaTextCompletionResponseIterator:
+     def test_chunk_parser_with_thinking_field(self):
+-- 
+2.39.5
+

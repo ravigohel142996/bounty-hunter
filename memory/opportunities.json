@@ -33,17 +33,17 @@
       "reward": 0,
       "currency": "USD",
       "funding": "unpaid (portfolio/relationship lane)",
-      "status": "RECOMMENDED_AWAITING_AUTHORIZATION",
+      "status": "STAGE3_DONE_LOCAL_PR_READY",
       "claimed": false,
       "assigned": false,
-      "branch": "fix/ollama-completion-thinking-field (proposed)",
+      "branch": "fix/ollama-completion-thinking-field",
       "pr_url": null,
-      "pr_status": null,
+      "pr_status": "not submitted (awaiting user approval)",
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Guided fix: port thinking->reasoning_content remap from ollama/chat/transformation.py:344 to ollama/completion/transformation.py non-streaming else-branch (~L320). 0 comments, 0 linked PRs at discovery. Window ~48h before bots."
+      "lessons_learned": "Guided fix: port thinking->reasoning_content remap from ollama/chat/transformation.py:344 to ollama/completion/transformation.py non-streaming else-branch (~L320). 0 comments, 0 linked PRs at discovery. Window ~48h before bots. | Stage3 2026-09-19: implemented minimal fix (+9/-1 src) + 2 mocked regression tests; 16/16 ollama completion tests, 27/27 chat tests, ruff lanes clean, toggle-proof done. Fork blocker discovered: fork default branch is litellm_internal_staging, no main, stale since 2026-07-03; CLA signature required at PR time. Artifacts in artifacts/litellm-41962/."
     },
     {
       "url": "https://github.com/BerriAI/litellm/issues/41963",
@@ -166,6 +166,13 @@
       "lessons_learned": "tscircuit micro-bounties are first-mover-only; enable issue alerts if pursuing."
     }
   ],
-  "watchlist_startups": ["BerriAI/litellm", "BasedHardware/omi", "tscircuit", "arakoodev/EdgeChains", "PrimeIntellect-ai/community-environments", "browser-use/browser-use"],
+  "watchlist_startups": [
+    "BerriAI/litellm",
+    "BasedHardware/omi",
+    "tscircuit",
+    "arakoodev/EdgeChains",
+    "PrimeIntellect-ai/community-environments",
+    "browser-use/browser-use"
+  ],
   "rejected_evergreen_note": "Third-party 'AI-assisted paid-fix proposal $X' comments are solicitations, never funded bounties."
 }
