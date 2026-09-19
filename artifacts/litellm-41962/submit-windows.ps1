@@ -1,4 +1,4 @@
-﻿# ============================================================================
+# ============================================================================
 # submit-windows.ps1 - publish the litellm #41962 PR from YOUR GitHub (Windows)
 # ----------------------------------------------------------------------------
 # - Works entirely on E: (your SD card with 47GB free). C: is NOT touched
@@ -28,13 +28,11 @@ if (-not (Have 'git')) {
   exit 1
 }
 if (-not (Have 'gh')) {
-  Write-Host '  GitHub CLI not found - installing portable copy onto E: (no C: space used)...'
-  New-Item -ItemType Directory -Force 'E:\dev\tools' | Out-Null
-  $ver = (Invoke-RestMethod 'https://api.github.com/repos/cli/cli/releases/latest').tag_name.TrimStart('v')
-  Invoke-WebRequest "https://github.com/cli/cli/releases/latest/download/gh_${ver}_windows_amd64.zip" -OutFile 'E:\dev\tools\gh.zip'
-  Expand-Archive 'E:\dev\tools\gh.zip' 'E:\dev\tools' -Force
-  Remove-Item 'E:\dev\tools\gh.zip'
-  $env:PATH = "E:\dev\tools\gh_${ver}_windows_amd64\bin;$env:PATH"
+  Write-Host '  GitHub CLI (gh) is NOT installed. Do this first:'
+  Write-Host '    1) winget install --id GitHub.cli -e --accept-source-agreements --accept-package-agreements'
+  Write-Host '       (or in browser: https://github.com/cli/cli/releases/latest -> get gh_*_windows_amd64.msi -> run it)'
+  Write-Host '    2) CLOSE this window, open a NEW PowerShell, run the 3 lines again.'
+  exit 1
 }
 (git --version)
 (gh --version) | Select-Object -First 1
@@ -44,13 +42,19 @@ gh auth status 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) { gh auth login }
 gh auth setup-git
 $me = (gh api user --jq .login).Trim()
+if (-not $me) {
+  Write-Host '  ERROR: could not read your GitHub login. Run "gh auth login" manually, then re-run this script.'
+  exit 1
+}
 Write-Host "   GitHub account: @$me"
 
 Write-Host '== [0/5] Live competition re-check (issue #41962) =='
 $comments = (gh api repos/BerriAI/litellm/issues/41962 --jq .comments).Trim()
 $prrefs = (gh api "repos/BerriAI/litellm/issues/41962/timeline?per_page=100" --jq '([.[] | select(.event=="cross-referenced" and .source.issue.pull_request != null)] | length)').Trim()
+$nrefs = 0
+[void][int]::TryParse($prrefs, [ref]$nrefs)
 Write-Host "   comments=$comments   competing-PR-links=$prrefs"
-if ($prrefs -ne '0') {
+if ($nrefs -gt 0) {
   Read-Host '   WARNING: a competing PR appeared. Ctrl+C to stop and reassess, or Enter to continue anyway'
 }
 
