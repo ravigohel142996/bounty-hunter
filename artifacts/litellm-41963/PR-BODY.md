@@ -45,3 +45,5 @@ Verification on `main @ 5d28684`:
 ---
 
 **Update (follow-up push)** — the first push broke 2 CI suites (`responses-caching-types`, `All Other Providers`): 6 pre-existing tests asserted the *pre-fix* wire shape (string forwarded verbatim to providers). Those expectations are updated to the canonical list, while the tests still call the public API with plain strings — so the string→list normalization stays exercised end-to-end. Local true-baseline sweep (unpatched vs patched) across both CI-shard surfaces, plus all 13 `llms/*/responses` dirs: **0 new failures**; the touched files pass 142/142. No production-code change vs v1.
+
+**Update (v3)** — the v2 push failed the `lint` quality-budget gate (`TQ008`: SDK-internal `patch()` needs an inline justification). Added `# test-quality-ok:` reasons on the two dispatch-seam patches in the new test file, matching the module's existing convention. Comment-only change; all three budget gates verified OK locally against the exact CI merge-base.

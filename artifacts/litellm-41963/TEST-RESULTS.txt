@@ -24,3 +24,13 @@ True-baseline delta protocol (unpatched upstream vs patched, both states):
   Direct suite: 142 passed (6 previously-failing files + new test file)
   ruff format --check + ruff check: main lane OK, tests lane OK
     (pre-existing >120-col lines in untouched regions left as-is)
+
+=== FOLLOW-UP (v3, forced push) — lint gate failure fixed ===
+Problem: CI 'lint' failed only on our v2 (peer PRs green).
+Root cause: test-quality budget gate (scripts/test_quality_gate.py, rule TQ008 -
+patching a litellm.* internal without justification) flagged the two dispatch-seam
+patches in test_string_input_normalization.py (lines 40/62).
+Fix: added inline '# test-quality-ok: ...' justifications matching the module's
+existing convention (test_responses_api_request_body.py / test_handler.py style).
+No behavior change. Verified against exact merge-base (209a7809):
+  test_quality_gate: OK | ruff_strict_gate: OK | type_discipline_gate: OK | ruff checks: OK
