@@ -31,3 +31,15 @@ _build_vertex_schema({"type":"object","properties":{"value":{"type":"string","co
 EOF
 
 ## ————————————————— PR-BODY.md below —————————————————
+
+=== FOLLOW-UP (v2 push) — two CI jobs fixed ===
+v1 failed 2 CI jobs: `Code Quality Checks` and `lint`.
+Root causes:
+  1. code-quality: recursive_detector.py -- repo keeps a name-whitelist of
+     recursive functions; the new helper was a self-recursive walker.
+     Fix: rewrote as an explicit-stack DFS (no recursion, same depth guard).
+  2. lint: type_discipline_gate LIT002 -- bare mutable-collection construction
+     in two spots ([(schema, 0)] worklist, [value] enum) without `# mutable-ok:`
+     justification. Markers added per repo idiom.
+Verified vs TRUE merge-base (557326501344): TQ/strict/LIT gates all OK,
+ruff format+check OK, my 4 regression tests pass, behavior unchanged.

@@ -85,3 +85,5 @@ Shared setup: the schema-conversion step is a pure mapping of the tool-schema kw
 ## Final Attestation
 
 - [x] The tests check the right things, including the edge cases, and regressions in the respective real-world customer use-cases are not possible after this PR
+
+**Update (v2)** — `code-quality` and `lint` gates both re-verified green: the schema walker is a stack-based DFS (repo keep a name-whitelist of recursive functions), and the two mutable-collection constructions carry the repo's `# mutable-ok:` markers. Behavior identical to v1.

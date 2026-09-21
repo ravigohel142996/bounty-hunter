@@ -173,17 +173,17 @@
       "reward": 0,
       "currency": "USD",
       "funding": "none (contribution/portfolio)",
-      "status": "PREP_READY_V1",
+      "status": "SUBMITTED_AWAITING_REVIEW",
       "claimed": false,
       "assigned": false,
       "branch": "fix/gemini-schema-const",
-      "pr_url": null,
-      "pr_status": null,
+      "pr_url": "https://github.com/BerriAI/litellm/pull/42259",
+      "pr_status": "open",
       "merge_status": null,
       "payout_status": null,
       "amount_received": 0,
       "rejection_reason": null,
-      "lessons_learned": "Fresh same-day (2026-09-19), labels bug+llm translation, 0 competing PRs, 6 dropped request fields enumerated by reporter. Same subsystem family as #41963/#41984. Score 74. Same-day analysis->PR window rule applies. | 2026-09-20: competitor claim (nikhilmaguluri) went stale ~22h, 0 PRs; SCOPE CUT to item#1 only: Gemini `const` silently dropped by _build_vertex_schema whitelist -> translate string const to single-entry enum+type:string (Gemini string-enums only), non-string const dropped WITH verbose warning per issue expectation. Commit bcf363706 (+63/-0, 2 files). Gates all green vs merge-base 209a7809: 93/93 mapped file, 0 new failures whole vertex_ai dir (comm-proven), ruff+format+budget trio OK. Kit at artifacts/litellm-41913/. Awaiting explicit user approval for SUBMIT stage."
+      "lessons_learned": "Fresh same-day (2026-09-19), labels bug+llm translation, 0 competing PRs, 6 dropped request fields enumerated by reporter. Same subsystem family as #41963/#41984. Score 74. Same-day analysis->PR window rule applies. | 2026-09-20: competitor claim (nikhilmaguluri) went stale ~22h, 0 PRs; SCOPE CUT to item#1 only: Gemini `const` silently dropped by _build_vertex_schema whitelist -> translate string const to single-entry enum+type:string (Gemini string-enums only), non-string const dropped WITH verbose warning per issue expectation. Commit bcf363706 (+63/-0, 2 files). Gates all green vs merge-base 209a7809: 93/93 mapped file, 0 new failures whole vertex_ai dir (comm-proven), ruff+format+budget trio OK. Kit at artifacts/litellm-41913/. Awaiting explicit user approval for SUBMIT stage. | 2026-09-21: user self-published PR #42259 (slice item#1). Their mid-fetch network reset left origin/main stale; am applied cleanly; GitHub handles merge-base. Watch CI + greptile + competition (items #2-6 still open to others). | CI v1 failed: code-quality recursive_detector (name-whitelisted recursion) + lint type_discipline LIT002 (bare mutable collections need # mutable-ok:). v2 = stack-DFS + 2 markers (b5fbc648), all gates green vs true merge-base 5573265013. LESSON: run FULL script battery (code_coverage_tests/*) + all 3 gates with the branchs TRUE merge-base, not an assumed one; gate-pass against stale base is meaningless."
     },
     {
       "url": "https://github.com/BerriAI/litellm/issues/41782",

@@ -1,6 +1,6 @@
-From bcf363706f47dc7ef3d10b1ad2c649ecf25ed9e1 Mon Sep 17 00:00:00 2001
+From b5fbc6486d56d5cadd809920db06141db0a3eace Mon Sep 17 00:00:00 2001
 From: ravigohel142996 <ravigohel142996@users.noreply.github.com>
-Date: Sat, 19 Sep 2026 19:09:54 +0000
+Date: Mon, 21 Sep 2026 17:51:50 +0000
 Subject: [PATCH] fix(vertex-ai): translate string JSON Schema const to enum in
  Gemini schemas
 
@@ -13,14 +13,14 @@ Co-authored-by: arena-agent <agent@arena.ai>
  2 files changed, 63 insertions(+)
 
 diff --git a/litellm/llms/vertex_ai/common_utils.py b/litellm/llms/vertex_ai/common_utils.py
-index 14aebcaab..0b273a3ba 100644
+index 14aebcaa..699c3853 100644
 --- a/litellm/llms/vertex_ai/common_utils.py
 +++ b/litellm/llms/vertex_ai/common_utils.py
 @@ -647,6 +647,36 @@ def _fix_enum_types(schema, depth=0):
                  _fix_enum_types(item, depth=depth + 1)
  
  
-+def _translate_json_schema_const(schema, depth=0) -> None:
++def _translate_json_schema_const(schema) -> None:
 +    """Translate JSON Schema ``const`` so the pinned value survives the Vertex ``Schema`` whitelist.
 +
 +    ``_build_vertex_schema`` filters fields down to the Vertex ``Schema`` TypedDict keys, which has no
@@ -29,25 +29,25 @@ index 14aebcaab..0b273a3ba 100644
 +    single-entry ``enum``; any other ``const`` value is surfaced with a warning because Gemini cannot
 +    express it.
 +    """
-+    if depth > DEFAULT_MAX_RECURSE_DEPTH:
-+        raise ValueError(f"Max depth of {DEFAULT_MAX_RECURSE_DEPTH} exceeded while processing schema.")
-+
-+    if isinstance(schema, dict):
-+        if "const" in schema:
-+            value: Final = schema.pop("const")
-+            if isinstance(value, str):
-+                schema.setdefault("type", "string")
-+                schema.setdefault("enum", [value])
-+            else:
-+                verbose_logger.warning(
-+                    "litellm: Gemini's schema model has no way to express a non-string JSON Schema "
-+                    f"const={value!r}; the constraint is dropped for this request (#41913)."
-+                )
-+        for value in schema.values():
-+            _translate_json_schema_const(value, depth=depth + 1)
-+    elif isinstance(schema, list):
-+        for item in schema:
-+            _translate_json_schema_const(item, depth=depth + 1)
++    stack: Final = [(schema, 0)]  # mutable-ok: DFS worklist for the schema tree
++    while stack:
++        node, depth = stack.pop()
++        if depth > DEFAULT_MAX_RECURSE_DEPTH:
++            raise ValueError(f"Max depth of {DEFAULT_MAX_RECURSE_DEPTH} exceeded while processing schema.")
++        if isinstance(node, dict):
++            if "const" in node:
++                value: Final = node.pop("const")
++                if isinstance(value, str):
++                    node.setdefault("type", "string")
++                    node.setdefault("enum", [value])  # mutable-ok: fresh per-node enum list, no aliasing
++                else:
++                    verbose_logger.warning(
++                        "litellm: Gemini's schema model has no way to express a non-string JSON Schema "
++                        f"const={value!r}; the constraint is dropped for this request (#41913)."
++                    )
++            stack.extend((child, depth + 1) for child in node.values())
++        elif isinstance(node, list):
++            stack.extend((item, depth + 1) for item in node)
 +
 +
  def _build_vertex_schema(parameters: dict, add_property_ordering: bool = False):
@@ -63,7 +63,7 @@ index 14aebcaab..0b273a3ba 100644
      _fix_enum_empty_strings(parameters)
  
 diff --git a/tests/test_litellm/llms/vertex_ai/test_vertex_ai_common_utils.py b/tests/test_litellm/llms/vertex_ai/test_vertex_ai_common_utils.py
-index 04a7ee451..94e8a2cf4 100644
+index 04a7ee45..94e8a2cf 100644
 --- a/tests/test_litellm/llms/vertex_ai/test_vertex_ai_common_utils.py
 +++ b/tests/test_litellm/llms/vertex_ai/test_vertex_ai_common_utils.py
 @@ -1,3 +1,4 @@
