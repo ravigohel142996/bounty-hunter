@@ -214,5 +214,8 @@
     "PrimeIntellect-ai/community-environments",
     "browser-use/browser-use"
   ],
-  "rejected_evergreen_note": "Third-party 'AI-assisted paid-fix proposal $X' comments are solicitations, never funded bounties."
+  "rejected_evergreen_note": "Third-party 'AI-assisted paid-fix proposal $X' comments are solicitations, never funded bounties.",
+  "mission": {
+    "2026-09-22_pivot": "INCOME-FIRST pivot per user directive. Verified lanes: micro1 (top pick: India yes, Deel USD, $22-40/hr, monthly 2x), Mercor ($35-60/hr coding, Stripe weekly Wed, 1-4wk match), Alignerr (real but inconsistent = bonus), Draft.dev ($315-578/article), Airbyte writers ($300-500+200 bonus), Algora (legit Stripe-KYC but saturated 15% merge rate, only <3comments >48h skill-fit), Opire secondary. REJECTED: omi (542 proposed-none-funded), Polar pledges dead, LogRocket/DO/Earthly writing paused. litellm issues 41913/41963/41782 = VERIFIED $0 (no bounty markers) = profile value only. Plan saved artifacts/income-plan-2026-09-22.md. Honest timeline told: first legit money 2-4 wks; no such thing as 48h legit."
+  }
 }
