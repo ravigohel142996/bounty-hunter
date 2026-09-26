@@ -217,5 +217,20 @@
   "rejected_evergreen_note": "Third-party 'AI-assisted paid-fix proposal $X' comments are solicitations, never funded bounties.",
   "mission": {
     "2026-09-22_pivot": "INCOME-FIRST pivot per user directive. Verified lanes: micro1 (top pick: India yes, Deel USD, $22-40/hr, monthly 2x), Mercor ($35-60/hr coding, Stripe weekly Wed, 1-4wk match), Alignerr (real but inconsistent = bonus), Draft.dev ($315-578/article), Airbyte writers ($300-500+200 bonus), Algora (legit Stripe-KYC but saturated 15% merge rate, only <3comments >48h skill-fit), Opire secondary. REJECTED: omi (542 proposed-none-funded), Polar pledges dead, LogRocket/DO/Earthly writing paused. litellm issues 41913/41963/41782 = VERIFIED $0 (no bounty markers) = profile value only. Plan saved artifacts/income-plan-2026-09-22.md. Honest timeline told: first legit money 2-4 wks; no such thing as 48h legit."
+  },
+  "pipelines": {
+    "micro1-oss-contributor": {
+      "status_2026-09-25": "REJECTED after AI interview (results below certification criteria) \u2014 micro1 EXPLICITLY invites re-application (\"Looking forward to your next attempt!\").",
+      "strengths_confirmed": [
+        "FE: React step UI + API-state handling",
+        "BE: FastAPI refund workflow, validation, business-logic separation",
+        "full-stack integration flow",
+        "responsible AI-assisted workflow (draft->manual review->tests)",
+        "architecture: routes/logic/repositories separation + regression testing"
+      ],
+      "single_failure_mode": "ANSWERS TOO GENERIC \u2014 every \"area for improvement\" = missing CONCRETE artifacts: named state-management tools, scale numbers (req/day, queues, deploy), exact endpoints+fields+schemas, ONE specific AI-assisted example w/ prompt+output+measurable outcome, numbered request/response flow w/ data stores.",
+      "counter_ammo_ready": "litellm episode as the end-to-end AI-assisted example (prompt->output->verification->84 CI green; v1->v2 policy-gate lesson) + numbered request-lifecycle template with [FILL] markers for his React/FastAPI refund project.",
+      "rules_for_reattempt": "run the chat mock-drill BEFORE re-interviewing (he skipped it last time); re-apply same role when relisted + apply Hindi Language Expert in parallel."
+    }
   }
 }
