@@ -1,15 +1,15 @@
 # 🤖 Auto Bounty Report — Python / AI
-_Generated: 2026-10-16 11:45 UTC_
+_Generated: 2026-10-17 11:02 UTC_
 
 **Real bounties found: 3** (scams & token-farms auto-filtered 🗑️)
 
 ## 1. Jira Service Management Connector
-- 📦 `onyx-dot-app/onyx` · ⭐ 32513 · 💬 163 comments · 🏷️ enhancement, maintainer approved, 💎 Bounty
+- 📦 `onyx-dot-app/onyx` · ⭐ 32538 · 💬 163 comments · 🏷️ enhancement, maintainer approved, 💎 Bounty
 - 🔗 https://github.com/onyx-dot-app/onyx/issues/2281
 - 📅 updated 2026-10-16 · match-score 80
 
 ## 2. [Bounty $1,000] ttnn.typecast to uint16 rounds while every other integer destination and the host pa
-- 📦 `tenstorrent/tt-metal` · ⭐ 1708 · 💬 5 comments · 🏷️ community, bounty, bounty_difficulty/medium
+- 📦 `tenstorrent/tt-metal` · ⭐ 1712 · 💬 5 comments · 🏷️ community, bounty, bounty_difficulty/medium
 - 🔗 https://github.com/tenstorrent/tt-metal/issues/51655
 - 📅 updated 2026-10-16 · match-score 17
 
